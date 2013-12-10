@@ -10,7 +10,6 @@ The site also provides [a RESTful remote API](http://haveibeenpwned.com/Api). Th
 
 * lightweight and easily extendable
 * SSL support with peer verification
-* unit tested
 * ready to use CLI
 
 ## Dependencies
@@ -37,9 +36,26 @@ To add it to your project:
 $ php composer.phar require ivan-novakov/php-haveibeenpwned-client:~1
 ```
 
-## Usage
+## CLI
 
-Basic usage:
+The library comes with ready to use command line interface based on the [Symfony Console](http://symfony.com/doc/current/components/console/introduction.html) component.
+
+Usage:
+
+```
+bin/hibp.php check [--ssl] [--ca-file="..."] [--plain] [--show-exceptions] email
+```
+
+Options:
+
+* `--ssl` - Use SSL when connecting to the remote service
+* `--ca-file` - Use an alternative CA file
+* `--plain` - Use simple output, suitable for parsing
+* `--show-exceptions` - Show the exception (if any) instead of the error message, suitable for debugging
+
+## Library
+
+### Basic usage
 
 ```php
 use InoHibp\Service;
@@ -58,7 +74,9 @@ if (null === $result) {
 }
 ```
 
-The `checkEmail()` method returns either `null` if the email has not been pwned
+The `checkEmail()` method returns either `null` if the email has not been pwned, or an array of site names, where the corresponding account has been compromised. In case of an error an exception is thrown.
+
+### SSL connections
 
 By default a HTTP connection is used. To enforce a SSL connection you need to initialize the service with the `use_ssl` option:
 
@@ -79,3 +97,22 @@ $service = new Service(array(
 ));
 ```
 
+### Exceptions
+
+* `InoHibp\Exception\InvalidEmailException` - the site has returned status code 400, which means, that the email has wrong format
+* `InoHibp\Exception\UnexpectedResponseException` - unexpected status code, anything different from the supported codes (see the [docs](http://haveibeenpwned.com/Api))
+* `InoHibp\Exception\InvalidResponseFormatException` - thrown when the status code is 200 and a JSON encoded list of sites is expected, but the parsing fails
+* `InoHibp\Exception\TransportException` - HTTP connection error
+* `InoHibp\Exception\InvalidCaFileException` - indicates a problem with the file containing the root CA certificate of the server (unreadable, invalid format, etc.)
+
+## Links
+
+* [';--have i been pwned?](http://haveibeenpwned.com/)
+
+## License
+
+* [BSD 3 Clause](http://debug.cz/license/bsd-3-clause)
+
+## Author
+
+* [Ivan Novakov](http://novakov.cz/)
