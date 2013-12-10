@@ -14,6 +14,7 @@
         }
     ],
     "require" : {
+        "php" : ">=5.3.4",
         "zendframework/zend-http" : "~2",
         "zendframework/zend-json" : "~2"
     },
