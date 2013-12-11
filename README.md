@@ -27,7 +27,7 @@ The easiest way to install the library is through composer.
 To use it as a standalone CLI:
 
 ```
-$ php composer.phar create-project ivan-novakov/php-haveibeenpwned-client ivan-novakov/php-haveibeenpwned-client ~1
+$ php composer.phar create-project ivan-novakov/php-haveibeenpwned-client php-haveibeenpwned-client ~1
 ```
 
 To add it to your project:
