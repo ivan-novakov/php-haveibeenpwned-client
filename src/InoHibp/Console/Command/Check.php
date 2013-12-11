@@ -49,17 +49,17 @@ class Check extends Command
         try {
             $result = $service->checkEmail($email);
         } catch (\Exception $e) {
-            $this->outputException($output, $e, $showExceptions, $plain);
+            $this->outputException($email, $output, $e, $showExceptions, $plain);
             return;
         }
         
-        $this->outputResult($result, $output, $plain);
+        $this->outputResult($email, $result, $output, $plain);
     }
 
 
-    protected function outputException(OutputInterface $output,\Exception $e, $showExceptions, $plain)
+    protected function outputException($email, OutputInterface $output, \Exception $e, $showExceptions, $plain)
     {
-        $output->writeln(sprintf("%s %s", $this->formatError('[ERROR]', $plain), $e->getMessage()));
+        $output->writeln(sprintf("%s %s %s", $this->formatEmail($email, $plain), $this->formatError('[ERROR]', $plain), $e->getMessage()));
         
         if ($showExceptions) {
             $output->writeln("$e");
@@ -67,43 +67,47 @@ class Check extends Command
     }
 
 
-    protected function outputResult($result, OutputInterface $output, $plain = false)
+    protected function outputResult($email, $result, OutputInterface $output, $plain = false)
     {
         if (null === $result) {
-            $output->writeln($this->formatOk('[OK]', $plain));
+            $output->writeln(sprintf("%s %s", $this->formatEmail($email, $plain), $this->formatOk('[OK]', $plain)));
             return;
         }
         
-        $output->writeln(sprintf("%s %s", $this->formatPwned('[PWNED]', $plain), implode(', ', $result)));
+        $output->writeln(sprintf("%s %s %s", $this->formatEmail($email, $plain), $this->formatPwned('[PWNED]', $plain), implode(', ', $result)));
     }
 
 
     protected function formatError($text, $plain)
     {
-        if ($plain) {
-            return $text;
-        }
-        
-        return '<fg=red>' . $text . '</fg=red>';
+        return $this->formatText('fg=red', $text, $plain);
     }
 
 
     protected function formatPwned($text, $plain)
     {
-        if ($plain) {
-            return $text;
-        }
-        
-        return '<fg=yellow;options=bold>' . $text . '</fg=yellow;options=bold>';
+        return $this->formatText('fg=yellow;options=bold', $text, $plain);
     }
 
 
     protected function formatOk($text, $plain)
     {
+        return $this->formatText('fg=green', $text, $plain);
+    }
+
+
+    protected function formatEmail($email, $plain)
+    {
+        return $this->formatText('fg=cyan', $email, $plain);
+    }
+
+
+    protected function formatText($format, $text, $plain)
+    {
         if ($plain) {
             return $text;
         }
         
-        return '<fg=green>' . $text . '</fg=green>';
+        return sprintf("<%s>%s</%s>", $format, $text, $format);
     }
 }
