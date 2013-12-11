@@ -19,6 +19,8 @@ class Service
 
     const OPT_USE_SSL = 'use_ssl';
 
+    const OPT_HTTP_CLIENT_USER_AGENT = 'http_client_user_agent';
+
     /**
      * @var array
      */
@@ -140,7 +142,9 @@ class Service
             $useSsl = $this->useSsl();
         }
         
-        $httpClient = new \Zend\Http\Client();
+        $httpClient = new \Zend\Http\Client(null, array(
+            'useragent' => $this->getOption(self::OPT_HTTP_CLIENT_USER_AGENT)
+        ));
         
         if ($useSsl) {
             $adapter = new Http\Client\Adapter\Curl();
@@ -228,7 +232,8 @@ class Service
             self::OPT_ENDPOINT_URL => 'http://haveibeenpwned.com/api/breachedaccount/',
             self::OPT_SSL_ENDPOINT_URL => 'https://haveibeenpwned.com/api/breachedaccount/',
             self::OPT_CA_FILE => __DIR__ . '/../../ssl/ca-bundle.pem',
-            self::OPT_USE_SSL => false
+            self::OPT_USE_SSL => false,
+            self::OPT_HTTP_CLIENT_USER_AGENT => 'PHP HaveIBeenPwned Client (https://github.com/ivan-novakov/php-haveibeenpwned-client)'
         );
     }
 }
